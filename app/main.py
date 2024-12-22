@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.responses import JSONResponse
 from app.utils import save_image_to_db
@@ -5,13 +6,14 @@ from app.schemas import Image
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from app.database import db 
+import uvicorn
 
 app = FastAPI()
 
 # Add CORSMiddleware to allow cross-origin requests
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # You can restrict it to certain domains if needed
+    allow_origins=["*"],  # Allow all origins
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
@@ -48,3 +50,7 @@ async def get_image(image_id: str):
         return image_data
     except Exception as e:
         raise HTTPException(status_code=500, detail="Failed to retrieve image from database")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=int(os.getenv("PORT", 8000)))
